@@ -1,0 +1,8 @@
+NPAPI - Stands for Named Pipe API
+Named pipes allow IPC (Inter-Process communication)
+
+Example uses for IPC are:
+Mod Launcher communicated with an injected DLL.
+
+C++ and C# bindings for the API will be maintained to allow use in the API's
+made in C++ and the GUI's made in C#.
