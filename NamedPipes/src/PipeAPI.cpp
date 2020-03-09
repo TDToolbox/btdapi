@@ -10,7 +10,7 @@ Pipe::Pipe(std::wstring PipeName)
 {
     m_pipeName = L"\\\\.\\pipe\\" + PipeName;
 
-    LOG(INFO) << L"Creating named pipe: " << m_pipeName.c_str();
+    LOGW(INFO) << L"Creating named pipe: " << m_pipeName.c_str();
 
     m_pipeHandle = CreateNamedPipeW(
         m_pipeName.c_str(), PIPE_ACCESS_DUPLEX,
@@ -20,11 +20,11 @@ Pipe::Pipe(std::wstring PipeName)
 
     if (m_pipeHandle == INVALID_HANDLE_VALUE) {
         auto error = GetLastError();
-        LOG(FATAL) << L"Error creating pipe: " << m_pipeName.c_str()
+        LOGW(FATAL) << L"Error creating pipe: " << m_pipeName.c_str()
                    << L" WinAPI error code: 0x" << std::hex << error;
     }
 
-    LOG(INFO) << L"Succesfully made named pipe: " << m_pipeName.c_str();
+    LOGW(INFO) << L"Succesfully made named pipe: " << m_pipeName.c_str();
 }
 
 void Pipe::ClosePipe()

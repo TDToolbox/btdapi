@@ -40,4 +40,3 @@ namespace g3 {
       std::atomic<bool>& get() {return value_;}
    };
 } // g3
-// explicit whitespace/EOF for VS15 

@@ -47,8 +47,8 @@
  * first commercial project to use it used 'g3' as an internal denominator for
  * the current project. g3 as in 'generation 2'. I decided to keep the g3 and g3log names
  * to give credit to the people in that project (you know who you are :) and I guess also
- * for 'sentimental' reasons. That a big influence was Google's glog is just a happy
- * coincidence or subconscious choice. Either way g3log became the name for this logger.
+ * for 'sentimental' reasons. That a big influence was google's glog is just a happy
+ *  concidence or subconscious choice. Either way g3log became the name for this logger.
  *
  * --- Thanks for a great 2011 and good luck with 'g3' --- KjellKod
  */
@@ -58,7 +58,7 @@ namespace g3 {
    struct FatalMessage;
 
    /** Should be called at very first startup of the software with \ref g3LogWorker
-    *  pointer. Ownership of the \ref g3LogWorker is the responsibility of the caller */
+    *  pointer. Ownership of the \ref g3LogWorker is the responsibilkity of the caller */
    void initializeLogging(LogWorker *logger);
 
 
@@ -86,16 +86,7 @@ namespace g3 {
    void setFatalExitHandler(std::function<void(FatalMessagePtr)> fatal_call);
 
 
-#ifdef G3_DYNAMIC_MAX_MESSAGE_SIZE
-  // only_change_at_initialization namespace is for changes to be done only during initialization. More specifically
-  // items here would be called prior to calling other parts of g3log
-  namespace only_change_at_initialization {
-    // Sets the MaxMessageSize to be used when capturing log messages. Currently this value is set to 2KB. Messages
-    // Longer than this are bound to 2KB with the string "[...truncated...]" at the end. This function allows
-    // this limit to be changed.
-    void setMaxMessageSize(size_t max_size);
-  }
-#endif /* G3_DYNAMIC_MAX_MESSAGE_SIZE */
+
 
    // internal namespace is for completely internal or semi-hidden from the g3 namespace due to that it is unlikely
    // that you will use these
@@ -104,8 +95,8 @@ namespace g3 {
       bool isLoggingInitialized();
 
       // Save the created LogMessage to any existing sinks
-      void saveMessage(const char *message, const char *file, int line, const char *function, const LEVELS &level,
-                       const char *boolean_expression, int fatal_signal, const char *stack_trace);
+      void saveMessage(const char *message, const wchar_t *wmessage, const char *file, int line, const char *function, const LEVELS &level,
+         const char *boolean_expression, int fatal_signal, const char *stack_trace);
 
       // forwards the message to all sinks
       void pushMessageToLogger(LogMessagePtr log_entry);
@@ -114,14 +105,14 @@ namespace g3 {
       // forwards a FATAL message to all sinks,. after which the g3logworker
       // will trigger crashhandler / g3::internal::exitWithDefaultSignalHandler
       //
-      // By default the "fatalCall" will forward a FatalMessageptr to this function
-      // this behavior can be changed if you set a different fatal handler through
+      // By default the "fatalCall" will forward a Fatalessageptr to this function
+      // this behaviour can be changed if you set a different fatal handler through
       // "setFatalExitHandler"
       void pushFatalMessageToLogger(FatalMessagePtr message);
 
 
-      // Saves the created FatalMessage to any existing sinks and exits with
-      // the originating fatal signal,. or SIGABRT if it originated from a broken contract.
+      // Save the created FatalMessage to any existing sinks and exit with
+      // the originating fatal signal,. or SIGABRT if it originated from a broken contract
       // By default forwards to: pushFatalMessageToLogger, see "setFatalExitHandler" to override
       //
       // If you override it then you probably want to call "pushFatalMessageToLogger" after your
@@ -145,18 +136,24 @@ namespace g3 {
 
 
 // LOG(level) is the API for the stream log
-#define LOG(level) if(!g3::logLevel(level)) {} else INTERNAL_LOG_MESSAGE(level).stream()
-
+#define LOG(level) if(g3::logLevel(level)) INTERNAL_LOG_MESSAGE(level).stream()
+#define LOGW(level) if(g3::logLevel(level)) INTERNAL_LOG_MESSAGE(level).wstream()
 
 // 'Conditional' stream log
 #define LOG_IF(level, boolean_expression)  \
-   if (false == (boolean_expression) || !g3::logLevel(level)) {} else INTERNAL_LOG_MESSAGE(level).stream()
+   if(true == boolean_expression)  \
+      if(g3::logLevel(level))  INTERNAL_LOG_MESSAGE(level).stream()
+#define LOG_IFW(level, boolean_expression)  \
+   if(true == boolean_expression)  \
+      if(g3::logLevel(level))  INTERNAL_LOG_MESSAGE(level).wstream()
 
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks
 //         I.R.L : it will exit the application by using fatal signal SIGABRT
 #define CHECK(boolean_expression)        \
-   if (true == (boolean_expression)) {} else INTERNAL_CONTRACT_MESSAGE(#boolean_expression).stream()
+   if (false == (boolean_expression))  INTERNAL_CONTRACT_MESSAGE(#boolean_expression).stream()
+#define CHECKW(boolean_expression)   \
+   if (false == (boolean_expression)) INTERNAL_CONTRACT_MESSAGE(#boolean_expression).wstream()
 
 
 /** For details please see this
@@ -208,19 +205,22 @@ And here is possible output
 :      Width trick:    10
 :      A string  \endverbatim */
 #define LOGF(level, printf_like_message, ...)                 \
-   if (!g3::logLevel(level)) {} else INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
+   if(g3::logLevel(level)) INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
 
 // Conditional log printf syntax
 #define LOGF_IF(level,boolean_expression, printf_like_message, ...) \
-   if (false == (boolean_expression) || !g3::logLevel(level)) {} else INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
+   if(true == boolean_expression)                                     \
+      if(g3::logLevel(level))  INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
 
 // Design By Contract, printf-like API syntax with variadic input parameters.
 // Throws std::runtime_eror if contract breaks
 #define CHECKF(boolean_expression, printf_like_message, ...)    \
-   if (true == (boolean_expression)) {} else INTERNAL_CONTRACT_MESSAGE(#boolean_expression).capturef(printf_like_message, ##__VA_ARGS__)
+   if (false == (boolean_expression))  INTERNAL_CONTRACT_MESSAGE(#boolean_expression).capturef(printf_like_message, ##__VA_ARGS__)
 
-// Backwards compatible. The same as CHECKF.
+// Backwards compatible. The same as CHECKF. 
 // Design By Contract, printf-like API syntax with variadic input parameters.
 // Throws std::runtime_eror if contract breaks
 #define CHECK_F(boolean_expression, printf_like_message, ...)    \
-   if (true == (boolean_expression)) {} else INTERNAL_CONTRACT_MESSAGE(#boolean_expression).capturef(printf_like_message, ##__VA_ARGS__)
+   if (false == (boolean_expression))  INTERNAL_CONTRACT_MESSAGE(#boolean_expression).capturef(printf_like_message, ##__VA_ARGS__)
+
+

@@ -14,7 +14,7 @@
 //  "CHANGE_G3LOG_DEBUG_TO_DBUG" and G3log's logging level DEBUG is changed to be DBUG
 #if (defined(CHANGE_G3LOG_DEBUG_TO_DBUG))
 #if (defined(DBUG))
-#error "DBUG is already defined elsewhere which clashes with G3Log's log level DBUG"
+#error "DEBUG is already defined elsewhere which clashes with G3Log's log level DEBUG"
 #endif
 #else
 #if (defined(DEBUG))
@@ -45,13 +45,14 @@ struct LEVELS {
    }
 
    friend void swap(LEVELS& first, LEVELS& second) {
-      std::swap(first.value, second.value);
-      std::swap(first.text, second.text);
+      using std::swap;
+      swap(first.value, second.value);
+      swap(first.text, second.text);
    }
 
 
    LEVELS& operator=(LEVELS other) {
-      std::swap(*this, other);
+      swap(*this, other);
       return *this;
    }
 
@@ -148,7 +149,7 @@ namespace g3 {
 
       /// reset all default logging levels to enabled
       /// remove any added logging levels so that the only ones left are
-      ///  {DEBUG,INFO,WARNING,FATAL}
+      ///  {DEBUG,INFO,WARNING,ERROR,FATAL}
       void reset();
    } // only_change_at_initialization
 

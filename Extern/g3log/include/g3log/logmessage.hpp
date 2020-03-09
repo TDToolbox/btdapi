@@ -51,11 +51,14 @@ namespace g3 {
       //  default look is Y/M/D H:M:S
       std::string timestamp(const std::string& time_format = {internal::date_formatted + " " + internal::time_formatted}) const;
 
-      std::string message() const  {
-         return _message;
-      }
+      std::string message() const;
+	  
       std::string& write() const {
          return _message;
+      }
+
+      std::wstring& wwrite() const {
+         return _wmessage;
       }
 
       std::string expression() const  {
@@ -67,6 +70,7 @@ namespace g3 {
 
       std::string threadID() const;
 
+      std::string toString() const;
       void setExpression(const std::string expression) {
          _expression = expression;
       }
@@ -75,45 +79,17 @@ namespace g3 {
       LogMessage& operator=(LogMessage other);
 
 
-      LogMessage(std::string file, const int line, std::string function, const LEVELS level);
+      LogMessage(const std::string& file, const int line, const std::string& function, const LEVELS& level);
 
       explicit LogMessage(const std::string& fatalOsSignalCrashMessage);
       LogMessage(const LogMessage& other);
       LogMessage(LogMessage&& other);
       virtual ~LogMessage() {}
 
-
-      // helper log printing functions used by "toString()"
-      static std::string splitFileName(const std::string& str);
-      static std::string fatalSignalToString(const LogMessage& msg);
-      // windows only: fatalExceptionToString
-      static  std::string fatalExceptionToString(const LogMessage& msg);
-      static std::string fatalLogToString(const LogMessage& msg);
-      static std::string fatalCheckToString(const LogMessage& msg);
-      static std::string normalToString(const LogMessage& msg);     
-
-
-
-      // the default formatting option
-      static std::string DefaultLogDetailsToString(const LogMessage& msg);
-
-      // this function can be used by the logging sink to add thread ID 
-      // see this concept and it is easy to make your own custom formatting 
-      static std::string FullLogDetailsToString(const LogMessage& msg);
-
-      using LogDetailsFunc = std::string (*) (const LogMessage&);
-      std::string toString(LogDetailsFunc formattingFunc = DefaultLogDetailsToString) const;
-
-
-     void overrideLogDetailsFunc(LogDetailsFunc func) const;
-
-
-
       //
       // Complete access to the raw data in case the helper functions above
       // are not enough.
       //
-      mutable LogDetailsFunc _logDetailsToStringFunc;
       g3::high_resolution_time_point _timestamp;
       std::thread::id _call_thread_id;
       std::string _file;
@@ -123,8 +99,7 @@ namespace g3 {
       LEVELS _level;
       std::string _expression; // only with content for CHECK(...) calls
       mutable std::string _message;
-
-
+      mutable std::wstring _wmessage;
 
       friend void swap(LogMessage& first, LogMessage& second) {
          using std::swap;
@@ -136,11 +111,11 @@ namespace g3 {
          swap(first._level, second._level);
          swap(first._expression, second._expression);
          swap(first._message, second._message);
+         swap(first._wmessage, second._wmessage);
       }
 
    };
 
- 
 
 
    /** Trigger for flushing the message queue and exiting the application
