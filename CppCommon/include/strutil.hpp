@@ -1,4 +1,5 @@
 #pragma once
+#include "core.hpp"
 #include <locale>
 #include <codecvt>
 #include <string>

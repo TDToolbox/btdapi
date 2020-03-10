@@ -58,23 +58,48 @@ void Pipe::Write(COMMAND_ENUM cmd, void* ptr, st size = PipeBufferSize)
     CloseHandle(hPipe);
 }
 
+
+st wstringBytes(std::wstring str)
+{
+    return str.length() * sizeof(wchar_t) + sizeof(L'\0');
+}
+
+
 void Pipe::SendPipedLog(std::wstring msg)
 {
-    Write(COMMAND_LOG, (void*)(msg.data()),
-          msg.length() * sizeof(wchar_t) + sizeof(wchar_t));
+    Write(COMMAND_LOG, (void*)(msg.data()), wstringBytes(msg));
+}
+
+std::vector<u8> Pipe::writeStringsToBuf(std::vector<std::wstring>& args){
+    // First calculate size of buffer
+    st size = 0;
+    size += sizeof(u32);
+    for (auto str : args) {
+        size += wstringBytes(str);
+    }
+    std::vector<u8> buf(size);
+    u32* argc = (u32*)buf.data();
+    *argc = args.size();
+    
+    st off = sizeof(u32);
+    for (auto str : args) {
+        st strsz = wstringBytes(str);
+        memcpy_s((void*)((st)(buf.data()) + off), size, str.c_str(), strsz);
+        off += strsz;
+    }
+
+    return buf;
+}
+
+void Pipe::SendPipedCli(std::vector<std::wstring> args) {
+    std::vector<u8> clibytes = writeStringsToBuf(args);
+    Write(COMMAND_CLI, clibytes.data(), clibytes.size());
 }
 
 void Pipe::ParsePipeData(std::vector<u8>& pipeData)
 {
     Message_void* vmesg = (Message_void*)(pipeData.data());
     switch (vmesg->cmd) {
-        case COMMAND_HANDSHAKE_SEND:
-            //SendHandshakeRecieved();
-            break;
-
-        case COMMAND_HANDSHAKE_RECIEVED:
-            LOGW(WARNING) << L"Recieved a handshake receieved!";
-            break;
 
         case COMMAND_LOG: {
 
@@ -91,10 +116,14 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
         case COMMAND_CLI: {
 
             Message_cli* msgcli = (Message_cli*)(pipeData.data());
-            std::vector<std::wstring> argv(msgcli->data.argc);
+            std::vector<std::wstring> argv;
 
-            for (auto i = 0; i < msgcli->data.argc; i++) {
-                argv.push_back(std::wstring(msgcli->data.argv[i]));
+            st off = 0;
+            for (auto i = 0; i < msgcli->argc; i++) {
+                st strsz = wstringBytes((wchar_t*)((st)(&msgcli->argv) + off));
+                std::wstring str((wchar_t*)((st)(&msgcli->argv) + off));
+                argv.push_back(str);
+                off += strsz;
             }
 
             for (auto callback : m_c_cli) {

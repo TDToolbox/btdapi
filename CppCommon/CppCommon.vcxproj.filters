@@ -18,7 +18,7 @@
     <ClInclude Include="include\core.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\strconv.hpp">
+    <ClInclude Include="include\strutil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

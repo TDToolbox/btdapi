@@ -15,12 +15,11 @@ const u32 PipeBufferSize = 0xFFFF;
 // If tests magically start hanging, increase this.
 const u32 ConnectFallbackMs = 1;
 
-enum COMMAND_ENUM : u16 {
-    COMMAND_HANDSHAKE_SEND = 0x0,
-    COMMAND_HANDSHAKE_RECIEVED = 0x1,
-    COMMAND_LOG = 0x2,
-    COMMAND_CLI = 0x3,
-    COMMAND_TASK = 0x4
+// u16 has issues with struct alignment
+enum COMMAND_ENUM : u32 {
+    COMMAND_LOG = 0x0,
+    COMMAND_CLI = 0x1,
+    COMMAND_TASK = 0x2
 };
 
 
@@ -36,23 +35,27 @@ struct Message {
 };
 
 struct DataStruct {
-    st size;
+    COMMAND_ENUM cmd;
+    u32 size;
     u8* data;
 };
 
-struct CliStruct {
+//#pragma pack(push, 2)
+struct Message_cli {
+    COMMAND_ENUM cmd;
     u32 argc;
     wchar_t** argv;
 };
+//#pragma pack(pop, 2)
 
 typedef Message<void*> Message_void;
 // For some reason, &wchar_t* didnt work but &wchar_t did.
 typedef Message<wchar_t> Message_log;
-typedef Message<CliStruct> Message_cli;
+//typedef Message<CliStruct> Message_cli;
 typedef Message<DataStruct> Message_data;
 
 typedef std::function<void(std::wstring&)> c_log;
-typedef std::function<void(std::vector<std::wstring>&)> c_cli;
+typedef std::function<void(std::vector<std::wstring>)> c_cli;
 typedef std::function<void(std::vector<u8>)> c_data;
 
 class Pipe {
@@ -68,6 +71,7 @@ class Pipe {
     void Write(COMMAND_ENUM cmd, void* data, st size);
     void ReadPipeLoop();
     void ParsePipeData(std::vector<u8>& pipeData);
+    std::vector<u8> writeStringsToBuf(std::vector<std::wstring>& args);
    // void SendHandshake();
     //void SendHandshakeRecieved();
 
@@ -78,7 +82,7 @@ class Pipe {
     std::vector<c_data> m_c_data;
 
     void SendPipedLog(std::wstring str);
-   // void SendPipedCli(std::vector<std::wstring> args);
+    void SendPipedCli(std::vector<std::wstring> args);
     //void SendPipedData(st size, u8* buf);
 
     void CreatePipe();
