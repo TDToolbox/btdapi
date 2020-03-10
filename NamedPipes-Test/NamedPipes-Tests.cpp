@@ -1,45 +1,81 @@
 #include "pch.hpp"
-#include "CppUnitTest.h"
+#include "PipeAPI.hpp"
 #include "g3log/g3log.hpp"
 #include "g3log/logworker.hpp"
-#include "PipeAPI.hpp"
 #include "strconv.hpp"
+#include "gtest/gtest.h"
+#include <functional>
+#include <string>
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
 
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 struct LogSink {
     void MsLog(g3::LogMessageMover logEntry)
     {
         auto lm = logEntry.get();
         if (lm.level() != "INFO") {
-           Logger::WriteMessage((n2w(lm.level()) + L": " + lm._wmessage + L'\n').c_str());
+            std::wstring ostring =
+                (n2w(lm.level()) + L": " + lm._wmessage + L'\n');
+            std::wcerr << ostring;
+            OutputDebugString(ostring.c_str());
         }
         else {
-            Logger::WriteMessage((lm._wmessage + L'\n').c_str());
-        }     
+            std::wstring ostring = lm._wmessage + L'\n';
+            std::wcerr << ostring;
+            OutputDebugString(ostring.c_str());
+        }
     }
 };
 
-namespace NamedPipesTest {
-TEST_CLASS(NamedPipesMainTests){
+const std::wstring TestPipeName(L"NPAPI-TEST-1");
+const std::wstring LogCallbackString(L"Log test callback");
 
-    private :
 
-    public :
-        TEST_METHOD(Test){
-            using namespace g3;
-            std::unique_ptr<LogWorker> logworker{LogWorker::createLogWorker()};
-            auto sinkHandle = logworker->addSink(std::make_unique<LogSink>(),
-                                                 &LogSink::MsLog);
+const st TRY_FOR_MS = 25;
+bool log_callback = false;
+std::mutex log_mutex;
+std::condition_variable log_condition;
 
-            initializeLogging(logworker.get());
+static void LogCallback(std::wstring str){
+    if (str == LogCallbackString) {
+        std::lock_guard<std::mutex> lock(log_mutex);
+        log_callback = true;
+        log_condition.notify_one();
+    }
+    else {
+       LOGW(FATAL) << "Failed test!";
+    }
+}
 
-            LOGW(INFO) << L"Wide Glog hi :)";
 
-            PipeAPI::Pipe pipe(L"NPAPI-TEST-X64-1");
-            Assert::AreEqual(0, 0);
+TEST(NamedPipeMessages, LogMessage)
+{
+    {
+        using namespace g3;
+        std::unique_ptr<LogWorker> logworker{LogWorker::createLogWorker()};
+        auto sinkHandle =
+            logworker->addSink(std::make_unique<LogSink>(), &LogSink::MsLog);
 
-            g3::internal::shutDownLogging();
-         }
-};
+        initializeLogging(logworker.get());
+
+        PipeAPI::Pipe pipe1(TestPipeName);
+        pipe1.CreatePipe();
+        std::function<void(std::wstring)> func = &LogCallback;
+        pipe1.m_c_log.push_back(func);
+        pipe1.ConnectPipe();
+
+        PipeAPI::Pipe pipe2(TestPipeName);
+        pipe2.SendPipedLog(LogCallbackString);
+     
+    }
+    
+    std::unique_lock<std::mutex> lock(log_mutex);
+    log_condition.wait(lock, []() { return log_callback; });
+    GTEST_SUCCEED();
+
+    
+
+    g3::internal::shutDownLogging();
 }
