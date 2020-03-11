@@ -95,8 +95,8 @@ void CliCallback(std::vector<std::wstring> args)
 }
 
 TEST(NamedPipeMessages, CLI) { 
+
     initLogging();
-    g3::internal::shutDownLogging();
 
     PipeAPI::Pipe pipe1(TestPipeName);
     pipe1.CreatePipe();
@@ -113,6 +113,57 @@ TEST(NamedPipeMessages, CLI) {
 
 }
 
-TEST(NamedPipeMessages, Task) { initLogging();
+static const wchar_t histr[4] = L"Hi!";
+
+struct TestData{
+    const wchar_t a[4] = L"Hi!";
+    int b = 0x69;
+    int c = 0x1337;
+};
+
+void DataCallback(std::vector<u8> data)
+{
+    TestData* dat = (TestData*)(data.data());
+    TestData t;
+    u32 success = 0;
+    if (wcscmp(dat->a, histr) == 0) {
+        success++;
+    }
+    if (dat->b == 0x69) {
+        success++;
+    }
+    if (dat->c == 0x1337) {
+        success++;
+    }
+    if (success == 3) {
+        std::lock_guard<std::mutex> lock(log_mutex);
+        log_callback = true;
+        log_condition.notify_one();
+    }
+    else {
+        LOGW(FATAL) << "Failed test!";
+    }
+}
+
+TEST(NamedPipeMessages, Task) {
+
+    initLogging();
+
+    PipeAPI::Pipe pipe1(TestPipeName);
+    pipe1.CreatePipe();
+    std::function<void(std::vector<u8>)> func = &DataCallback;
+    pipe1.m_c_data.push_back(func);
+    pipe1.ConnectPipe();
+
+    TestData t;
+    t.b = 0x69;
+    t.c = 0x1337;
+
+    PipeAPI::Pipe pipe2(TestPipeName);
+    pipe2.SendPipedData(&t, sizeof(t));
+
+    std::unique_lock<std::mutex> lock(log_mutex);
+    log_condition.wait(lock, []() { return log_callback; });
+    GTEST_SUCCEED();
 
 }

@@ -19,7 +19,7 @@ const u32 ConnectFallbackMs = 1;
 enum COMMAND_ENUM : u32 {
     COMMAND_LOG = 0x0,
     COMMAND_CLI = 0x1,
-    COMMAND_TASK = 0x2
+    COMMAND_DATA = 0x2
 };
 
 
@@ -83,7 +83,7 @@ class Pipe {
 
     void SendPipedLog(std::wstring str);
     void SendPipedCli(std::vector<std::wstring> args);
-    //void SendPipedData(st size, u8* buf);
+    void SendPipedData(void* buf, u32 size);
 
     void CreatePipe();
     void ConnectPipe();

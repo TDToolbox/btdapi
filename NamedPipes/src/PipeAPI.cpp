@@ -70,6 +70,17 @@ void Pipe::SendPipedLog(std::wstring msg)
     Write(COMMAND_LOG, (void*)(msg.data()), wstringBytes(msg));
 }
 
+void Pipe::SendPipedData(void* buf, u32 size)
+{
+    DataStruct* ds = (DataStruct*)(malloc(size + sizeof(size)));
+    ds->size = size;
+    memcpy_s(&ds->data, size, buf, size);
+
+    Write(COMMAND_DATA, &ds->size, size + sizeof(size));
+
+    //free(ds);
+}
+
 std::vector<u8> Pipe::writeStringsToBuf(std::vector<std::wstring>& args){
     // First calculate size of buffer
     st size = 0;
@@ -133,10 +144,12 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
             break;
         }
 
-        case COMMAND_TASK: {
-        
-            Message_data* msdata = (Message_data*)(pipeData.data());
-            std::vector<u8> bytes(msdata->data.data, msdata->data.data + msdata->data.size);
+        case COMMAND_DATA: {
+
+            DataStruct* msdata = (DataStruct*)(pipeData.data());
+            std::vector<u8> bytes(
+                (u8*)(&msdata->data),
+                (u8*)((st)(&msdata->data) + (st)(msdata->size)));
 
             for (auto callback : m_c_data) {
                 callback(bytes);
