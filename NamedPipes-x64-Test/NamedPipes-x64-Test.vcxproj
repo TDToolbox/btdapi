@@ -44,8 +44,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CppCommon\CppCommon.vcxproj">
-      <Project>{8556e483-d134-42b5-83a5-02342180354d}</Project>
+    <ProjectReference Include="..\CppCommon-x64\CppCommon-x64.vcxproj">
+      <Project>{e4b15799-a6e7-47c7-ba91-9aa9f33da3df}</Project>
     </ProjectReference>
     <ProjectReference Include="..\NamedPipes-x64\NamedPipes-x64.vcxproj">
       <Project>{9e666f14-8ce5-404a-990d-286b28745302}</Project>

@@ -71,7 +71,7 @@ TEST(NamedPipeMessages, LogMessage)
     PipeAPI::Pipe pipe1(TestPipeName);
     pipe1.CreatePipe();
     std::function<void(std::wstring)> func = &LogCallback;
-    pipe1.m_c_log.push_back(func);
+    pipe1.m_c_log[L"TEST_LOG_CALLBACK"] = func;
     pipe1.ConnectPipe();
 
     PipeAPI::Pipe pipe2(TestPipeName);
@@ -101,7 +101,7 @@ TEST(NamedPipeMessages, CLI) {
     PipeAPI::Pipe pipe1(TestPipeName);
     pipe1.CreatePipe();
     std::function<void(std::vector<std::wstring>)> func = &CliCallback;
-    pipe1.m_c_cli.push_back(func);
+    pipe1.m_c_cli[L"TEST_CLI_CALLBACK"] = func;
     pipe1.ConnectPipe();
 
     PipeAPI::Pipe pipe2(TestPipeName);
@@ -145,19 +145,17 @@ void DataCallback(std::vector<u8> data)
     }
 }
 
-TEST(NamedPipeMessages, Task) {
+TEST(NamedPipeMessages, Data) {
 
     initLogging();
 
     PipeAPI::Pipe pipe1(TestPipeName);
     pipe1.CreatePipe();
     std::function<void(std::vector<u8>)> func = &DataCallback;
-    pipe1.m_c_data.push_back(func);
+    pipe1.m_c_data[L"TEST_DATA_CALLBACK"] = func;
     pipe1.ConnectPipe();
 
     TestData t;
-    t.b = 0x69;
-    t.c = 0x1337;
 
     PipeAPI::Pipe pipe2(TestPipeName);
     pipe2.SendPipedData(&t, sizeof(t));

@@ -47,8 +47,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CppCommon\CppCommon.vcxproj">
-      <Project>{8556e483-d134-42b5-83a5-02342180354d}</Project>
+    <ProjectReference Include="..\CppCommon-x86\CppCommon-x86.vcxproj">
+      <Project>{8cafae65-d955-457f-954a-9b6f22fc3520}</Project>
     </ProjectReference>
     <ProjectReference Include="..\NamedPipes-x86\NamedPipes-x86.vcxproj">
       <Project>{2c83902f-e373-4dc3-8d7a-452053583813}</Project>

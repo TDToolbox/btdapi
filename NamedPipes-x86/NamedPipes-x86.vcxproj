@@ -26,6 +26,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CppCommon-x86\CppCommon-x86.vcxproj">
+      <Project>{8cafae65-d955-457f-954a-9b6f22fc3520}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{2C83902F-E373-4DC3-8D7A-452053583813}</ProjectGuid>

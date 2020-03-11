@@ -3,10 +3,15 @@
 #include "Config.hpp"
 #include "g3log/g3log.hpp"
 #include <thread>
+#include "strutil.hpp"
 
 namespace PipeAPI {
 
 Pipe::Pipe(std::wstring PipeName) { m_pipeName = L"\\\\.\\pipe\\" + PipeName; }
+
+//
+// Pipe Init
+//
 
 void Pipe::CreatePipe()
 {
@@ -24,6 +29,25 @@ void Pipe::CreatePipe()
 
     LOGW(INFO) << L"Succesfully made named pipe: " << m_pipeName.c_str();
 }
+
+void Pipe::ConnectPipe()
+{
+    LOGW(INFO) << L"Connecting to named pipe: " << m_pipeName.c_str();
+
+    // Huge thanks to Argh#2682 for helping with threading
+    std::promise<void> loopPromise;
+    std::future<void> fut = loopPromise.get_future();
+
+    m_loopThread =
+        std::thread(&Pipe::ReadPipeLoop, this, std::move(loopPromise));
+    m_loopThread.detach();
+
+    fut.get();
+}
+
+//
+// Pipe sending
+//
 
 void Pipe::Write(COMMAND_ENUM cmd, void* ptr, st size = PipeBufferSize)
 {
@@ -58,12 +82,36 @@ void Pipe::Write(COMMAND_ENUM cmd, void* ptr, st size = PipeBufferSize)
     CloseHandle(hPipe);
 }
 
-
-st wstringBytes(std::wstring str)
+std::vector<u8> Pipe::writeStringsToBuf(std::vector<std::wstring>& args)
 {
-    return str.length() * sizeof(wchar_t) + sizeof(L'\0');
+    // Get size
+    st size = 0;
+    size += sizeof(u32);
+    for (auto str : args) {
+        size += wstringBytes(str);
+    }
+    std::vector<u8> buf(size);
+
+    // Set size
+    u32* argc = (u32*)buf.data();
+    *argc = args.size();
+
+    // Write strings
+    st off = sizeof(u32);
+    for (auto str : args) {
+        st strsz = wstringBytes(str);
+        memcpy_s((void*)((st)(buf.data()) + off), size, str.c_str(), strsz);
+        off += strsz;
+    }
+
+    return buf;
 }
 
+void Pipe::SendPipedCli(std::vector<std::wstring> args)
+{
+    std::vector<u8> clibytes = writeStringsToBuf(args);
+    Write(COMMAND_CLI, clibytes.data(), clibytes.size());
+}
 
 void Pipe::SendPipedLog(std::wstring msg)
 {
@@ -78,34 +126,13 @@ void Pipe::SendPipedData(void* buf, u32 size)
 
     Write(COMMAND_DATA, &ds->size, size + sizeof(size));
 
+    // TODO: Investigate potential memory leak
     //free(ds);
 }
 
-std::vector<u8> Pipe::writeStringsToBuf(std::vector<std::wstring>& args){
-    // First calculate size of buffer
-    st size = 0;
-    size += sizeof(u32);
-    for (auto str : args) {
-        size += wstringBytes(str);
-    }
-    std::vector<u8> buf(size);
-    u32* argc = (u32*)buf.data();
-    *argc = args.size();
-    
-    st off = sizeof(u32);
-    for (auto str : args) {
-        st strsz = wstringBytes(str);
-        memcpy_s((void*)((st)(buf.data()) + off), size, str.c_str(), strsz);
-        off += strsz;
-    }
-
-    return buf;
-}
-
-void Pipe::SendPipedCli(std::vector<std::wstring> args) {
-    std::vector<u8> clibytes = writeStringsToBuf(args);
-    Write(COMMAND_CLI, clibytes.data(), clibytes.size());
-}
+//
+// Pipe reading
+//
 
 void Pipe::ParsePipeData(std::vector<u8>& pipeData)
 {
@@ -115,10 +142,10 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
         case COMMAND_LOG: {
 
             Message_log* msglog = (Message_log*)(pipeData.data());
-            std::wstring logmsg(&msglog->data);
+            std::wstring logmsg(&msglog->msg);
 
-            for (auto callback : m_c_log) {
-                callback(logmsg);
+            for (auto const& callback : m_c_log) {
+                callback.second(logmsg);
             }
 
             break;
@@ -130,15 +157,15 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
             std::vector<std::wstring> argv;
 
             st off = 0;
-            for (auto i = 0; i < msgcli->argc; i++) {
+            for (u32 i = 0; i < msgcli->argc; i++) {
                 st strsz = wstringBytes((wchar_t*)((st)(&msgcli->argv) + off));
                 std::wstring str((wchar_t*)((st)(&msgcli->argv) + off));
                 argv.push_back(str);
                 off += strsz;
             }
 
-            for (auto callback : m_c_cli) {
-                callback(argv);
+            for (auto const& callback : m_c_cli) {
+                callback.second(argv);
             }
 
             break;
@@ -151,8 +178,8 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
                 (u8*)(&msdata->data),
                 (u8*)((st)(&msdata->data) + (st)(msdata->size)));
 
-            for (auto callback : m_c_data) {
-                callback(bytes);
+            for (auto const& callback : m_c_data) {
+                callback.second(bytes);
             }
 
         }
@@ -161,47 +188,37 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
     }
 }
 
-void Pipe::ReadPipeLoop()
+void Pipe::ReadPipeLoop(std::promise<void>&& loopPromise)
 {
     std::vector<u8> buf(PipeBufferSize);
     DWORD dwRead = 0; // Num of bytes
 
+        loopPromise.set_value();
+
         if (ConnectNamedPipe(m_pipeHandle, NULL) != NULL) {
-            std::lock_guard<std::mutex> lock(m_loopMtx);
-            m_loopInitialized = true;
-            m_loopCond.notify_all();
-            
+                   
             while (ReadFile(m_pipeHandle, buf.data(), PipeBufferSize, &dwRead,
                             NULL) != FALSE) {  
                 ParsePipeData(buf);
             }
         }
-        // Fallback if failed
-        std::lock_guard<std::mutex> lock(m_loopMtx);
-        m_loopInitialized = true;
-        m_loopCond.notify_all();
+        else {
+            auto error = GetLastError();
+            LOGW(FATAL) << L"Error connecting pipe: " << m_pipeName.c_str()
+                        << L" WinAPI error code: 0x" << std::hex << error;
+        }
 
     CloseHandle(m_pipeHandle);
 }
 
-void Pipe::ConnectPipe()
-{
-    LOGW(INFO) << L"Connecting to named pipe: " << m_pipeName.c_str();
-    std::unique_lock<std::mutex> lock(m_loopMtx);
-
-    m_loopThread = std::thread(&Pipe::ReadPipeLoop, this);
-    m_loopThread.detach();
-
-    // There's a chance that ReadPipeLoop is ~1MS too slow, most the this
-    // shouldn't be used
-    m_loopCond.wait_for(lock, std::chrono::milliseconds(ConnectFallbackMs),
-                        [this]() { return m_loopInitialized; });
-}
+//
+// Pipe de-init
+//
 
 void Pipe::ClosePipe()
 {
-    // TODO: This wont kill the thread, figure out how to make it kill the
-    // thread.
+    // TODO: This wont kill the thread since its detached, 
+    // figure out how to make it kill the thread.
     LOGW(INFO) << L"Closing pipe...";
     m_loopThread.~thread();
 
