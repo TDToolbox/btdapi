@@ -1,9 +1,10 @@
 #pragma once
 #include "pch.hpp"
+//
 #include "core.hpp"
+#include <condition_variable>
 #include <future>
 #include <mutex>
-#include <condition_variable>
 #include <unordered_map>
 
 namespace PipeAPI {
@@ -51,14 +52,12 @@ typedef std::function<void(std::wstring&)> c_log;
 typedef std::function<void(std::vector<std::wstring>)> c_cli;
 typedef std::function<void(std::vector<u8>)> c_data;
 
-
 class Pipe {
   private:
     std::wstring m_pipeName;
     vp m_pipeHandle = (vp)(INVALID_HANDLE_VALUE);
 
-    std::thread m_loopThread; 
-
+    std::thread m_loopThread;
 
     void Write(COMMAND_ENUM cmd, void* data, st size);
     void ReadPipeLoop(std::promise<void>&& loopPromises);
@@ -83,4 +82,4 @@ class Pipe {
     ~Pipe();
 };
 
-}
+} // namespace PipeAPI

@@ -1,15 +1,15 @@
 #include "pch.hpp"
-#include "strutil.hpp"
+// PCH must be first.
 #include "PipeAPI.hpp"
 #include "g3log/g3log.hpp"
 #include "g3log/logworker.hpp"
+#include "strutil.hpp"
 #include "gtest/gtest.h"
-#include <functional>
-#include <string>
 #include <chrono>
-#include <mutex>
 #include <condition_variable>
-
+#include <functional>
+#include <mutex>
+#include <string>
 
 struct LogSink {
     void MsLog(g3::LogMessageMover logEntry)
@@ -37,7 +37,8 @@ const st TRY_FOR_MS = 25;
 bool loggingInitialized = false;
 std::unique_ptr<g3::LogWorker> logworker;
 
-void initLogging() {
+void initLogging()
+{
     if (!loggingInitialized) {
         logworker = g3::LogWorker::createLogWorker();
         auto sinkHandle =
@@ -45,22 +46,21 @@ void initLogging() {
 
         initializeLogging(logworker.get());
     }
-
 }
-
 
 bool log_callback = false;
 std::mutex log_mutex;
 std::condition_variable log_condition;
 
-void LogCallback(std::wstring str){
+void LogCallback(std::wstring str)
+{
     if (str == LogCallbackString) {
         std::lock_guard<std::mutex> lock(log_mutex);
         log_callback = true;
         log_condition.notify_one();
     }
     else {
-       LOGW(FATAL) << "Failed test!";
+        LOGW(FATAL) << "Failed test!";
     }
 }
 
@@ -94,7 +94,8 @@ void CliCallback(std::vector<std::wstring> args)
     }
 }
 
-TEST(NamedPipeMessages, CLI) { 
+TEST(NamedPipeMessages, CLI)
+{
 
     initLogging();
 
@@ -110,12 +111,11 @@ TEST(NamedPipeMessages, CLI) {
     std::unique_lock<std::mutex> lock(log_mutex);
     log_condition.wait(lock, []() { return log_callback; });
     GTEST_SUCCEED();
-
 }
 
 static const wchar_t histr[4] = L"Hi!";
 
-struct TestData{
+struct TestData {
     const wchar_t a[4] = L"Hi!";
     int b = 0x69;
     int c = 0x1337;
@@ -145,7 +145,8 @@ void DataCallback(std::vector<u8> data)
     }
 }
 
-TEST(NamedPipeMessages, Data) {
+TEST(NamedPipeMessages, Data)
+{
 
     initLogging();
 
@@ -163,5 +164,4 @@ TEST(NamedPipeMessages, Data) {
     std::unique_lock<std::mutex> lock(log_mutex);
     log_condition.wait(lock, []() { return log_callback; });
     GTEST_SUCCEED();
-
 }

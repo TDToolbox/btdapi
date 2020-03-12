@@ -34,6 +34,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x64", "CppCommon-
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x86", "CppCommon-x86\CppCommon-x86.vcxproj", "{8CAFAE65-D955-457F-954A-9B6F22FC3520}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MetadataDump", "MetadataDump", "{959ED87A-BFD1-48EE-81A7-F5970E054301}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		NamedPipes\NamedPipes.vcxitems*{2c83902f-e373-4dc3-8d7a-452053583813}*SharedItemsImports = 4

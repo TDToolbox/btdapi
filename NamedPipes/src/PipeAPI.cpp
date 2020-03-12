@@ -1,9 +1,10 @@
 #include "pch.hpp"
-#include "PipeAPI.hpp"
+//
 #include "Config.hpp"
+#include "PipeAPI.hpp"
 #include "g3log/g3log.hpp"
-#include <thread>
 #include "strutil.hpp"
+#include <thread>
 
 namespace PipeAPI {
 
@@ -27,12 +28,16 @@ void Pipe::CreatePipe()
                     << L" WinAPI error code: 0x" << std::hex << error;
     }
 
+#ifdef PIPE_LOGGING
     LOGW(INFO) << L"Succesfully made named pipe: " << m_pipeName.c_str();
+#endif
 }
 
 void Pipe::ConnectPipe()
 {
+#ifdef PIPE_LOGGING
     LOGW(INFO) << L"Connecting to named pipe: " << m_pipeName.c_str();
+#endif
 
     // Huge thanks to Argh#2682 for helping with threading
     std::promise<void> loopPromise;
@@ -56,7 +61,6 @@ void Pipe::Write(COMMAND_ENUM cmd, void* ptr, st size = PipeBufferSize)
     msgint.cmd = cmd;
     memcpy_s(&msgint.buf, size, ptr, size);
 
-
     HANDLE hPipe = INVALID_HANDLE_VALUE;
     DWORD dwWritten = 0;
 
@@ -72,9 +76,9 @@ void Pipe::Write(COMMAND_ENUM cmd, void* ptr, st size = PipeBufferSize)
     if (!WriteFile(hPipe, &msgint, vmsgsize, &dwWritten, NULL)) {
         auto error = GetLastError();
         LOGW(WARNING) << L"Error writing to pipe file: " << m_pipeName.c_str()
-                    << L" WinAPI error code: 0x" << std::hex << error;
+                      << L" WinAPI error code: 0x" << std::hex << error;
     }
-    
+
     if (dwWritten < vmsgsize) {
         LOGW(WARNING) << L"0 bytes written!";
     }
@@ -127,7 +131,7 @@ void Pipe::SendPipedData(void* buf, u32 size)
     Write(COMMAND_DATA, &ds->size, size + sizeof(size));
 
     // TODO: Investigate potential memory leak
-    //free(ds);
+    // free(ds);
 }
 
 //
@@ -184,7 +188,7 @@ void Pipe::ParsePipeData(std::vector<u8>& pipeData)
 
         }
 
-            break;
+        break;
     }
 }
 
@@ -193,20 +197,20 @@ void Pipe::ReadPipeLoop(std::promise<void>&& loopPromise)
     std::vector<u8> buf(PipeBufferSize);
     DWORD dwRead = 0; // Num of bytes
 
-        loopPromise.set_value();
+    loopPromise.set_value();
 
-        if (ConnectNamedPipe(m_pipeHandle, NULL) != NULL) {
-                   
-            while (ReadFile(m_pipeHandle, buf.data(), PipeBufferSize, &dwRead,
-                            NULL) != FALSE) {  
-                ParsePipeData(buf);
-            }
+    if (ConnectNamedPipe(m_pipeHandle, NULL) != NULL) {
+
+        while (ReadFile(m_pipeHandle, buf.data(), PipeBufferSize, &dwRead,
+                        NULL) != FALSE) {
+            ParsePipeData(buf);
         }
-        else {
-            auto error = GetLastError();
-            LOGW(FATAL) << L"Error connecting pipe: " << m_pipeName.c_str()
-                        << L" WinAPI error code: 0x" << std::hex << error;
-        }
+    }
+    else {
+        auto error = GetLastError();
+        LOGW(FATAL) << L"Error connecting pipe: " << m_pipeName.c_str()
+                    << L" WinAPI error code: 0x" << std::hex << error;
+    }
 
     CloseHandle(m_pipeHandle);
 }
@@ -217,9 +221,11 @@ void Pipe::ReadPipeLoop(std::promise<void>&& loopPromise)
 
 void Pipe::ClosePipe()
 {
-    // TODO: This wont kill the thread since its detached, 
+    // TODO: This wont kill the thread since its detached,
     // figure out how to make it kill the thread.
+#ifdef PIPE_LOGGING
     LOGW(INFO) << L"Closing pipe...";
+#endif
     m_loopThread.~thread();
 
     if (m_pipeHandle != INVALID_HANDLE_VALUE) {
