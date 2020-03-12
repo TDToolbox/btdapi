@@ -34,7 +34,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x64", "CppCommon-
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x86", "CppCommon-x86\CppCommon-x86.vcxproj", "{8CAFAE65-D955-457F-954A-9B6F22FC3520}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MetadataDump", "MetadataDump", "{959ED87A-BFD1-48EE-81A7-F5970E054301}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MetadataDumper", "MetadataDumper", "{959ED87A-BFD1-48EE-81A7-F5970E054301}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetadataDumper", "MetadataDumper\MetadataDumper.vcxitems", "{F6803902-B144-45E6-8B09-2767C5DBF0AD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DumperCLI", "DumperCLI\DumperCLI.vcxproj", "{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -49,6 +53,7 @@ Global
 		NamedPipes-Test\NamedPipes-Test.vcxitems*{99d4db48-9b33-4762-b0b7-c65aaaf41073}*SharedItemsImports = 9
 		NamedPipes\NamedPipes.vcxitems*{9e666f14-8ce5-404a-990d-286b28745302}*SharedItemsImports = 4
 		CppCommon\CppCommon.vcxitems*{e4b15799-a6e7-47c7-ba91-9aa9f33da3df}*SharedItemsImports = 4
+		MetadataDumper\MetadataDumper.vcxitems*{f6803902-b144-45e6-8b09-2767c5dbf0ad}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -105,6 +110,14 @@ Global
 		{8CAFAE65-D955-457F-954A-9B6F22FC3520}.Release|x64.Build.0 = Release|x64
 		{8CAFAE65-D955-457F-954A-9B6F22FC3520}.Release|x86.ActiveCfg = Release|Win32
 		{8CAFAE65-D955-457F-954A-9B6F22FC3520}.Release|x86.Build.0 = Release|Win32
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Debug|x64.ActiveCfg = Debug|x64
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Debug|x64.Build.0 = Debug|x64
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Debug|x86.ActiveCfg = Debug|Win32
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Debug|x86.Build.0 = Debug|Win32
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x64.ActiveCfg = Release|x64
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x64.Build.0 = Release|x64
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x86.ActiveCfg = Release|Win32
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,6 +135,8 @@ Global
 		{314DB8AC-6CE0-4CA6-B80F-EECEEC49F551} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
 		{E4B15799-A6E7-47C7-BA91-9AA9F33DA3DF} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
 		{8CAFAE65-D955-457F-954A-9B6F22FC3520} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
+		{F6803902-B144-45E6-8B09-2767C5DBF0AD} = {959ED87A-BFD1-48EE-81A7-F5970E054301}
+		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E} = {959ED87A-BFD1-48EE-81A7-F5970E054301}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7BEA3CC9-6CC9-49C5-AF34-AC39073C2578}
