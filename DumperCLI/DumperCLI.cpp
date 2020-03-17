@@ -1,10 +1,16 @@
 // DumperCLI.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
+#define MAPI_MVER 24.2
+#include "VersionInclude.hpp"
+
 #include <iostream>
+
+Il2CppClass* test;
 
 int main()
 {
+
     std::cout << "Hello World!\n";
 }
 

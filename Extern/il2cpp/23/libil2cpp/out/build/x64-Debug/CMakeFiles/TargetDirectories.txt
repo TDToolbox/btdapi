@@ -1,0 +1,3 @@
+C:/Users/ben/source/repos/btdapi/Extern/il2cpp/23/libil2cpp/out/build/x64-Debug/CMakeFiles/libil2cpp.dir
+C:/Users/ben/source/repos/btdapi/Extern/il2cpp/23/libil2cpp/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/ben/source/repos/btdapi/Extern/il2cpp/23/libil2cpp/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

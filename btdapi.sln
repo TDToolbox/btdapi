@@ -34,11 +34,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x64", "CppCommon-
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-x86", "CppCommon-x86\CppCommon-x86.vcxproj", "{8CAFAE65-D955-457F-954A-9B6F22FC3520}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MetadataDumper", "MetadataDumper", "{959ED87A-BFD1-48EE-81A7-F5970E054301}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetadataDumper", "MetadataDumper\MetadataDumper.vcxitems", "{F6803902-B144-45E6-8B09-2767C5DBF0AD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MetadataAPI", "MetadataAPI", "{959ED87A-BFD1-48EE-81A7-F5970E054301}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DumperCLI", "DumperCLI\DumperCLI.vcxproj", "{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetadataAPI", "MetadataAPI\MetadataAPI.vcxitems", "{DA40720E-E1DA-4C5E-B73B-4926F50A4D5E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppCommon-Any", "CppCommon-Any\CppCommon-Any.vcxproj", "{720679BD-702D-40AC-AEC2-5C4DD349AE61}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -46,14 +48,16 @@ Global
 		CppCommon\CppCommon.vcxitems*{314db8ac-6ce0-4ca6-b80f-eeceec49f551}*SharedItemsImports = 9
 		NamedPipes-Test\NamedPipes-Test.vcxitems*{69a2e939-19e5-40bc-8ea4-8a5bef7a23c5}*SharedItemsImports = 4
 		NamedPipes\NamedPipes.vcxitems*{69a2e939-19e5-40bc-8ea4-8a5bef7a23c5}*SharedItemsImports = 4
+		CppCommon\CppCommon.vcxitems*{720679bd-702d-40ac-aec2-5c4dd349ae61}*SharedItemsImports = 4
 		NamedPipes-Test\NamedPipes-Test.vcxitems*{7374eb7f-60b1-441f-8a22-0febc72b557e}*SharedItemsImports = 4
 		NamedPipes\NamedPipes.vcxitems*{7374eb7f-60b1-441f-8a22-0febc72b557e}*SharedItemsImports = 4
 		CppCommon\CppCommon.vcxitems*{8cafae65-d955-457f-954a-9b6f22fc3520}*SharedItemsImports = 4
 		NamedPipes\NamedPipes.vcxitems*{8e6477d1-4a8d-4157-a0a3-5c43ee3aca90}*SharedItemsImports = 9
 		NamedPipes-Test\NamedPipes-Test.vcxitems*{99d4db48-9b33-4762-b0b7-c65aaaf41073}*SharedItemsImports = 9
 		NamedPipes\NamedPipes.vcxitems*{9e666f14-8ce5-404a-990d-286b28745302}*SharedItemsImports = 4
+		MetadataAPI\MetadataAPI.vcxitems*{ce9e60cf-4cdc-4b32-a81f-afa5b468706e}*SharedItemsImports = 4
+		MetadataAPI\MetadataAPI.vcxitems*{da40720e-e1da-4c5e-b73b-4926f50a4d5e}*SharedItemsImports = 9
 		CppCommon\CppCommon.vcxitems*{e4b15799-a6e7-47c7-ba91-9aa9f33da3df}*SharedItemsImports = 4
-		MetadataDumper\MetadataDumper.vcxitems*{f6803902-b144-45e6-8b09-2767c5dbf0ad}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -118,6 +122,14 @@ Global
 		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x64.Build.0 = Release|x64
 		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x86.ActiveCfg = Release|Win32
 		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E}.Release|x86.Build.0 = Release|Win32
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Debug|x64.ActiveCfg = Debug|x64
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Debug|x64.Build.0 = Debug|x64
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Debug|x86.ActiveCfg = Debug|Win32
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Debug|x86.Build.0 = Debug|Win32
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Release|x64.ActiveCfg = Release|x64
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Release|x64.Build.0 = Release|x64
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Release|x86.ActiveCfg = Release|Win32
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,8 +147,9 @@ Global
 		{314DB8AC-6CE0-4CA6-B80F-EECEEC49F551} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
 		{E4B15799-A6E7-47C7-BA91-9AA9F33DA3DF} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
 		{8CAFAE65-D955-457F-954A-9B6F22FC3520} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
-		{F6803902-B144-45E6-8B09-2767C5DBF0AD} = {959ED87A-BFD1-48EE-81A7-F5970E054301}
 		{CE9E60CF-4CDC-4B32-A81F-AFA5B468706E} = {959ED87A-BFD1-48EE-81A7-F5970E054301}
+		{DA40720E-E1DA-4C5E-B73B-4926F50A4D5E} = {959ED87A-BFD1-48EE-81A7-F5970E054301}
+		{720679BD-702D-40AC-AEC2-5C4DD349AE61} = {A6E993AA-3AFA-4079-ABC6-E783635FB757}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7BEA3CC9-6CC9-49C5-AF34-AC39073C2578}
