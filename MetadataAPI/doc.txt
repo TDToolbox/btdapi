@@ -11,7 +11,7 @@ A table of supported unity versions
 | Unity Version | IL2CPP Version    | Supported?| Headers?  |
 |===============|===================|===========|===========|
 | 4.6.1+        | ??                | No        | No        |
-| 5.2.x+        | 15                | No        | No        |
+| 5.2.x+        | 15                | No        | Yes       |
 | 5.3.0         | 16                | No        | No        |
 | 5.3.2         | 19                | No        | No        |
 | 5.3.3         | 20                | No        | No        |
@@ -21,6 +21,6 @@ A table of supported unity versions
 | 2017.x        | 24.0              | No        | Yes       |
 | 2018.3        | 24.1              | No        | Yes       |
 | 2019.2        | 24.2              | No        | Yes       |
-| 2020.1        | 24.3              | No        | Yes       |
+| 2020.1        | 24.3              | No        | No        |
 |               |                   |           |           |
 

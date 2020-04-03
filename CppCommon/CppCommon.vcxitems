@@ -15,9 +15,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)include\core.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\fileutils.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\strutil.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\fileutils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\strutil.cpp" />
   </ItemGroup>
 </Project>

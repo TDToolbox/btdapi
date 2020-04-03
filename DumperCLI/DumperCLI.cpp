@@ -3,15 +3,41 @@
 
 #define MAPI_MVER 24.2
 #include "VersionInclude.hpp"
-
+#include "core.hpp"
+#include "fileutils.hpp"
 #include <iostream>
+#include <vector>
 
-Il2CppClass* test;
 
-int main()
+struct il2cppver {
+    u32 ver = 0;
+    // Unity doesnt track the subversion, its maintained by the community.
+    u32 subver = 0;
+};
+
+il2cppver getVersion()
 {
+    il2cppver ver;
 
-    std::cout << "Hello World!\n";
+    return ver;
+}
+
+int main(int argc, char** argv) {
+    // Currently theres not going to be any CLI whilst this tool is under dev
+    // Just hardcoded values...
+    std::string metPath =
+        "C:\\SteamLibrary\\steamapps\\common\\BloonsTD6\\BloonsTD6_"
+        "Data\\il2cpp_data\\Metadata\\global-metadata.dat";
+    std::string binPath =
+        "C:\\SteamLibrary\\steamapps\\common\\BloonsTD6\\GameAssembly.dll";
+
+    std::vector<u8> met = loadFile(metPath);
+    std::vector<u8> bin = loadFile(binPath);
+
+    Il2CppImage xd;
+    
+
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -18,9 +18,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)src\api.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\binutils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\il2cpp\il2cppbase.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\15.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\23.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\24.0.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\24.2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\MultiApi.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\MetadataInclude.hpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)include\VersionInclude.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)include\binutils.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\il2cpp\il2cppbase.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\15.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\23.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\24.0.hpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\il2cpp\vers\24.2.hpp" />
   </ItemGroup>
 </Project>
