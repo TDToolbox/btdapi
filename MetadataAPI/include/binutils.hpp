@@ -13,6 +13,8 @@ class ExecSec {
   public:
     st start;
     st end;
+    st vstart;
+    st vend;
 };
 
 class ExecFile {
@@ -20,8 +22,10 @@ class ExecFile {
     vp File;
     std::vector<ExecSec> Sections;
 
-    // Relative To Offset (RVA to Offset)
-    virtual st RTO(st addr);
+    // Virtual To Offset (VA to Offset)
+    virtual st VTO(st addr);
+    // Offset to Virtual
+    virtual st OTV(st addr);
 
     virtual ~ExecFile(){};
 };
@@ -41,7 +45,8 @@ class PE : public ExecFile {
 // Use: PeFile(byte* pBin), a pointer to a file loaded in memory.
 class PeFile : public PE {
   public:
-    st RTO(st addr) override { return 0; };
+    virtual st VTO(st addr) override;
+    virtual st OTV(st addr) override;
 
     PeFile(vp bin);
 };
@@ -49,7 +54,7 @@ class PeFile : public PE {
 // Use: PeMemory(byte* pBin), a pointer to the loaded DLL's bytes.
 class PeMemory : public PE {
   public:
-    st RTO(st addr) override { return 0; };
+    virtual st VTO(st addr) override { return 0; };
 
     PeMemory(vp bin);
 };

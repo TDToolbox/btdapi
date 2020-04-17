@@ -50,11 +50,11 @@
     <ClCompile Include="src\test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="bin\TestBins\BinTest-x64.dll">
+    <None Include="bins\TestBins\BinTest-x64.dll">
       <DeploymentContent>false</DeploymentContent>
       <FileType>Document</FileType>
     </None>
-    <None Include="bin\TestBins\BinTest-x86.dll" />
+    <None Include="bins\TestBins\BinTest-x86.dll" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -140,5 +140,4 @@
     <Copy SourceFiles="$(SolutionDir)MetadataAPITest\bin\Testbins\BinTest-x64.dll;$(SolutionDir)MetadataAPITest\bin\Testbins\BinTest-x86.dll" DestinationFolder="$(OutDir)" />
   </Target>
   -->
-
 </Project>

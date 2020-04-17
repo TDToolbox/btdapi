@@ -2,7 +2,7 @@
 //
 
 #define MAPI_MVER 24.2
-#include "VersionInclude.hpp"
+#include "il2cpp/base.hpp"
 #include "core.hpp"
 #include "fileutils.hpp"
 #include <iostream>
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
     std::vector<u8> met = loadFile(metPath);
     std::vector<u8> bin = loadFile(binPath);
 
-    Il2CppImage xd;
+    Il2CppDumperv242 xd();
     
 
 
