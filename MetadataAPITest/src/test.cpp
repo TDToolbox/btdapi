@@ -128,7 +128,10 @@ TEST(MetadataAPI, CodeRegistrations) {
 
     Il2CppDumperv242 dumper(btd6Bin.data(), btd6Met.data(), &btd6pe);
 
+    dumper.FindVersion();
     dumper.FindCodeReg();
+    dumper.FindMetadataReg();
+    dumper.DumpHeader();
 
     SUCCEED();
 }

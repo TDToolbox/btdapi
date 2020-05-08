@@ -12,7 +12,8 @@ st ExecFile::VTO(st addr)
     return addr;
 }
 
-st ExecFile::OTV(st addr) {
+st ExecFile::OTV(st addr)
+{
     LOG(FATAL) << "Calling base class \"ExecFile\" instead of one of the "
                << "derivative classes.";
 
@@ -152,6 +153,7 @@ st PeFile::VTO(st addr)
             return addr - sec.vstart + sec.start;
         }
     }
+    throw new std::exception("Could not convert virtual to offset!");
 }
 
 st PeFile::OTV(st addr)
@@ -161,4 +163,25 @@ st PeFile::OTV(st addr)
             return addr + sec.vstart - sec.start;
         }
     }
+    throw new std::exception("Could not convert offset to virtual!");
+}
+
+bool PeFile::CheckPtrRangeRa(st ptr)
+{
+    for (ExecSec sec : Sections) {
+        if (sec.start <= ptr <= sec.end) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool PeFile::CheckPtrRangeVa(st ptr)
+{
+    for (ExecSec sec : Sections) {
+        if (sec.vstart <= ptr <= sec.vend) {
+            return true;
+        }
+    }
+    return false;
 }

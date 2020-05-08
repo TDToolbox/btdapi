@@ -1,7 +1,9 @@
 #include "il2cpp/base.hpp"
 
-#define MAPI_MVER 15
-#include "MetadataInclude.hpp"
+#define MAPI_MVER 24
+#define MAPI_REV 2
+#include "ugly/MetadataInclude.hpp"
+#undef MAPI_REV
 #undef MAPI_VER
 
 #include "g3log/g3log.hpp"
@@ -34,7 +36,9 @@ int32_t Il2CppDumper::FindVersion()
     }
 }
 
-std::vector<st> Il2CppDumper::FindPtrs(st val)
+std::vector<st>
+Il2CppDumper::FindVal(st val, st (*func)(ExecSec& sec, std::vector<u8>& arr,
+                                         std::vector<u8>::iterator it))
 {
     std::vector<st> vals;
 
@@ -54,7 +58,7 @@ std::vector<st> Il2CppDumper::FindPtrs(st val)
                 break;
             }
 
-            vals.push_back(sec.vstart + (it - vec.begin()));
+            vals.push_back(func(sec, vec, it));
 
             std::advance(it, 1);
         }
@@ -63,31 +67,20 @@ std::vector<st> Il2CppDumper::FindPtrs(st val)
     return vals;
 }
 
+std::vector<st> Il2CppDumper::FindPtrs(st val)
+{
+    return FindVal(val,
+                   [](ExecSec& sec, std::vector<u8>& arr,
+                      std::vector<u8>::iterator it) -> st {
+                       return sec.vstart + (it - arr.begin());
+                   });
+}
+
 std::vector<st> Il2CppDumper::GetPtrs(st val)
 {
-    std::vector<st> vals;
-
-    for (ExecSec sec : m_exe->Sections) {
-        std::vector<u8> vec(m_bin + sec.start, m_bin + sec.end);
-
-        std::vector<u8> valb((u8*)(&val), (u8*)(&val) + sizeof(val));
-        std::vector<u8>::iterator it = vec.begin();
-
-        for (;;) {
-
-            it = std::search(
-                it, vec.end(),
-                std::boyer_moore_horspool_searcher(valb.begin(), valb.end()));
-
-            if (it == vec.end()) {
-                break;
-            }
-
-            vals.push_back(sec.start + (it - vec.begin()));
-
-            std::advance(it, 1);
-        }
-    }
-
-    return vals;
+    return FindVal(val,
+                   [](ExecSec& sec, std::vector<u8>& arr,
+                      std::vector<u8>::iterator it) -> st {
+                       return sec.start + (it - arr.begin());
+                   });
 }

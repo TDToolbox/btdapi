@@ -7,6 +7,11 @@ struct Il2CppMetadataRegistration;
 struct Il2CppGlobalMetadataHeader;
 
 class Il2CppDumper {
+  private:
+    std::vector<st> FindVal(st val,
+                            st (*func)(ExecSec& sec, std::vector<u8>& arr,
+                                       std::vector<u8>::iterator it));
+
   protected:
     u8* m_bin;
     u8* m_metadata;
@@ -14,18 +19,16 @@ class Il2CppDumper {
     Il2CppGlobalMetadataHeader* m_hdr;
     ExecFile* m_exe;
 
-    
-    int FindVersion();
 
     std::vector<st> FindPtrs(st val);
-    std::vector<st> GetPtrs(st val);
+    std::vector<st> GetPtrs(st val);  
 
 
   public:
 
+    int FindVersion();
     virtual void FindMetadataReg() = 0;
     virtual void FindCodeReg() = 0;
-
     Il2CppMetadataRegistration* m_metreg;
     Il2CppCodeRegistration* m_codereg;
 
@@ -53,8 +56,12 @@ class Il2CppDumperv240 : public Il2CppDumperv230 {
   public:
     using Il2CppDumperv230::Il2CppDumperv230;
 };
+
+// This is the only one tested so far.
 class Il2CppDumperv242 : public Il2CppDumperv240 {
   public:
     using Il2CppDumperv240::Il2CppDumperv240;
     void FindCodeReg() override;
+    void FindMetadataReg() override;
+    void DumpHeader();
 };

@@ -1,17 +1,18 @@
 #include "il2cpp/base.hpp"
 
+#define INCLUDE_STATICS
 #define MAPI_MVER 24
 #define MAPI_REV 2
 #include "MetadataInclude.hpp"
+#include MetadataCacheInclude
 #undef MAPI_VER
+#undef INCLUDE_STATICS
 
 #include "binutils.hpp"
+#include "g3log/g3log.hpp"
 #include <algorithm>
 #include <functional>
 #include <intrin.h>
-#include "g3log/g3log.hpp"
-
-
 
 void Il2CppDumperv242::FindCodeReg()
 {
@@ -52,7 +53,8 @@ void Il2CppDumperv242::FindCodeReg()
                         st coderegptr = ptr4 - offsetof(Il2CppCodeRegistration,
                                                         codeGenModules);
                         m_codereg =
-                            (Il2CppCodeRegistration*)m_exe->VTO(coderegptr);
+                            (Il2CppCodeRegistration*)(m_bin +
+                                                      m_exe->VTO(coderegptr));
 
                         return;
                     }
@@ -66,4 +68,60 @@ void Il2CppDumperv242::FindCodeReg()
     LOG(FATAL) << "Could not find code registration ";
     // We haven't found shit
     return;
+}
+
+void Il2CppDumperv242::FindMetadataReg()
+{
+    st typeDefinitionCount =
+        m_hdr->typeDefinitionsCount / sizeof(Il2CppTypeDefinition);
+
+    for (st val : GetPtrs(typeDefinitionCount)) {
+        if (!m_exe->CheckPtrRangeRa(val)) {
+            break;
+        }
+
+        st metadataUsageListCount =
+            m_hdr->metadataUsageListsCount / sizeof(Il2CppMetadataUsageList);
+
+        Il2CppMetadataUsageList* metadataUsageLists =
+            (Il2CppMetadataUsageList*)(m_metadata + m_hdr->metadataUsageListsOffset);
+        Il2CppMetadataUsagePair* metadataUsagePairs =
+            (Il2CppMetadataUsagePair*)(m_metadata +
+                                       m_hdr->metadataUsagePairsOffset);
+
+        st metadataUsages = 0;
+
+        // Why? I'm not sure, but its how il2cppdumper does it.
+        for (auto i = 0; i < metadataUsageListCount; ++i) {
+            for (auto k = 0; k < metadataUsageLists[i].count; ++k) {
+                auto offset = metadataUsageLists[i].start + k;
+                auto metadataUsagePair = metadataUsagePairs[offset];
+                
+                if (metadataUsages < metadataUsagePair.destinationIndex) {
+                    metadataUsages = metadataUsagePair.destinationIndex;
+                }
+            }
+        }
+
+        st* arr = (st*)(m_bin + val);
+        for (auto i = 0; i < metadataUsages; i++) {
+            if (!m_exe->CheckPtrRangeVa(arr[i])) {
+                break;
+            }
+        }
+
+        st ptr = val - offsetof(Il2CppMetadataRegistration,
+                                typeDefinitionsSizesCount);
+
+        m_metreg = (Il2CppMetadataRegistration*)(m_bin + ptr);
+
+        return;
+    }
+}
+
+void Il2CppDumperv242::DumpHeader()
+{
+    Il2CppCodeGenOptions codeGenOptions{0};
+    il2cpp::vm::MetadataCache::Register(m_codereg, m_metreg, &codeGenOptions);
+
 }

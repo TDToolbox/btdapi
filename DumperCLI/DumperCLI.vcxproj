@@ -90,7 +90,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;$(SolutionDir)MetadataAPI\include\ugly;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;$(SolutionDir)MetadataAPI\ugly;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -125,7 +125,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;$(SolutionDir)MetadataAPI\ugly;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Extern\il2cpp;$(SolutionDir)MetadataAPI\include;$(SolutionDir)CppCommon\include;$(SolutionDir)Extern\g3log\include;$(SolutionDir)MetadataAPI\ugly;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessToFile>false</PreprocessToFile>
     </ClCompile>
     <Link>
@@ -163,6 +163,14 @@
     <ProjectReference Include="..\CppCommon-Any\CppCommon-Any.vcxproj">
       <Project>{720679bd-702d-40ac-aec2-5c4dd349ae61}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Update="C:\Users\ben\source\repos\btdapi\MetadataAPI\include\ugly\il2cpp-runtime-stats">
+      <FileType>Document</FileType>
+    </ClInclude>
+    <ClInclude Update="C:\Users\ben\source\repos\btdapi\MetadataAPI\include\ugly\il2cpp-runtime-stats.h">
+      <FileType>Document</FileType>
+    </ClInclude>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

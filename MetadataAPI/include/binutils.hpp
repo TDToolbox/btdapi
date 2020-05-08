@@ -23,9 +23,12 @@ class ExecFile {
     std::vector<ExecSec> Sections;
 
     // Virtual To Offset (VA to Offset)
-    virtual st VTO(st addr);
+    virtual st VTO(st addr) = 0;
     // Offset to Virtual
-    virtual st OTV(st addr);
+    virtual st OTV(st addr) = 0;
+
+    virtual bool CheckPtrRangeRa(st ptr) = 0;
+    virtual bool CheckPtrRangeVa(st ptr) = 0;
 
     virtual ~ExecFile(){};
 };
@@ -47,6 +50,9 @@ class PeFile : public PE {
   public:
     virtual st VTO(st addr) override;
     virtual st OTV(st addr) override;
+
+    virtual bool CheckPtrRangeRa(st ptr) override;
+    virtual bool CheckPtrRangeVa(st ptr) override;
 
     PeFile(vp bin);
 };
